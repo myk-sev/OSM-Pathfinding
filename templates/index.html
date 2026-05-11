@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>OSM Pathfinding</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 2rem; }
+    form { max-width: 700px; display: grid; gap: 0.75rem; }
+    .row { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; }
+    label { font-weight: 600; }
+    input, select, button { padding: 0.6rem; font-size: 1rem; }
+    button { cursor: pointer; }
+  </style>
+</head>
+<body>
+  <h1>Find a Route</h1>
+
+  <form method="post" action="{% url 'results' %}">
+    {% csrf_token %}
+
+    <div class="row">
+      <div>
+        <label for="start_lat">Start Latitude</label>
+        <input id="start_lat" name="start_lat" type="number" step="any" required />
+      </div>
+      <div>
+        <label for="start_lng">Start Longitude</label>
+        <input id="start_lng" name="start_lng" type="number" step="any" required />
+      </div>
+    </div>
+
+    <div class="row">
+      <div>
+        <label for="end_lat">End Latitude</label>
+        <input id="end_lat" name="end_lat" type="number" step="any" required />
+      </div>
+      <div>
+        <label for="end_lng">End Longitude</label>
+        <input id="end_lng" name="end_lng" type="number" step="any" required />
+      </div>
+    </div>
+
+    <div>
+      <label for="algorithm">Algorithm</label>
+      <select id="algorithm" name="algorithm" required>
+        <option value="dijkstra">Dijkstra</option>
+        <option value="astar">A*</option>
+      </select>
+    </div>
+
+    <button type="submit">Run Pathfinding</button>
+  </form>
+</body>
+</html>
