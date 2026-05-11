@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Pathfinding Results</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 2rem; }
+    .metrics { margin: 1rem 0 2rem; }
+    .metrics dt { font-weight: 700; }
+    .metrics dd { margin: 0 0 0.75rem; }
+    .map-wrap { border: 1px solid #ccc; border-radius: 8px; overflow: hidden; }
+    a { text-decoration: none; }
+  </style>
+</head>
+<body>
+  <h1>Pathfinding Results</h1>
+
+  <dl class="metrics">
+    <dt>Algorithm</dt>
+    <dd>{{ metrics.algorithm }}</dd>
+
+    <dt>Total Distance (meters)</dt>
+    <dd>{{ metrics.total_distance }}</dd>
+
+    <dt>Visited Nodes</dt>
+    <dd>{{ metrics.nodes_visited }}</dd>
+
+    <dt>Path Length (nodes)</dt>
+    <dd>{{ metrics.path_length }}</dd>
+  </dl>
+
+  <div class="map-wrap">
+    {{ map_html|safe }}
+  </div>
+
+  <p><a href="{% url 'interface:index' %}">← Back to route form</a></p>
+</body>
+</html>

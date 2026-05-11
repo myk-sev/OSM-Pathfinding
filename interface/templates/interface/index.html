@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>OSM Pathfinding</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 2rem; }
+    form { max-width: 700px; display: grid; gap: 0.75rem; }
+    label { font-weight: 600; }
+    select, button { padding: 0.6rem; font-size: 1rem; }
+    .error { color: #b00020; }
+  </style>
+</head>
+<body>
+  <h1>Find a Route</h1>
+
+  {% if error %}
+    <p class="error">{{ error }}</p>
+  {% endif %}
+
+  <form method="post">
+    {% csrf_token %}
+
+    {{ form.non_field_errors }}
+
+    <div>
+      <label for="{{ form.route.id_for_label }}">Route</label>
+      {{ form.route }}
+      {{ form.route.errors }}
+    </div>
+
+    <div>
+      <label for="{{ form.algorithm.id_for_label }}">Algorithm</label>
+      {{ form.algorithm }}
+      {{ form.algorithm.errors }}
+    </div>
+
+    <button type="submit">Run Pathfinding</button>
+  </form>
+</body>
+</html>
