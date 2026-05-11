@@ -72,6 +72,8 @@ DijkstraResult dijkstra(const std::vector<std::vector<std::pair<int, double>>>& 
     };
 }
 
+// Demo entry point; compile with -DPATHFINDING_DEMO_MAIN to run this file directly.
+#ifdef PATHFINDING_DEMO_MAIN
 int main() {
     // Example graph: graph[u] = { {v, weight}, ... }
     std::vector<std::vector<std::pair<int, double>>> graph = {
@@ -99,3 +101,4 @@ int main() {
 
     return 0;
 }
+#endif  // PATHFINDING_DEMO_MAIN
