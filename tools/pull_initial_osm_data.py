@@ -38,9 +38,18 @@ def _compute_bounds(buffer_deg: float) -> tuple[float, float, float, float]:
 
 def pull_initial_graph(output_path: Path, network_type: str, buffer_deg: float) -> Path:
     """Download and save graph data required by the route pipeline."""
+    try:
+        import osmnx as ox
+    except ModuleNotFoundError as exc:
+        raise RuntimeError(
+            "Missing dependency 'osmnx'. Install requirements first (for example: pip install -r requirements.txt)."
+        ) from exc
+
     north, south, east, west = _compute_bounds(buffer_deg=buffer_deg)
 
-    graph = ox.graph_from_bbox((north, south, east, west), network_type=network_type, simplify=True)
+    # OSMnx expects bbox ordering as (left, bottom, right, top) => (west, south, east, north).
+    bbox = (west, south, east, north)
+    graph = ox.graph_from_bbox(bbox=bbox, network_type=network_type, simplify=True)
 
     output_path.parent.mkdir(parents=True, exist_ok=True)
     ox.save_graphml(graph, output_path)
