@@ -2,13 +2,12 @@
 
 from __future__ import annotations
 
-import json
-import subprocess
 from pathlib import Path
 from typing import Any
 
 import osmnx as ox
 
+from services.cpp_pathfinder_runner import run_cpp_pathfinder
 from services.export_osmnx_graph import build_node_mappings, convert_edges, write_graph_input
 from services.route_choices import ROUTE_BY_KEY
 
@@ -48,7 +47,6 @@ def run_route_pipeline(route_key: str, algorithm: str) -> tuple[Any, dict[int, d
     graphml_path = repo_root / "ivy_tech_lake_county.graphml"
     graph_input_path = repo_root / "graph_input.txt"
     output_json_path = repo_root / "pathfinding_result.json"
-    executable_path = repo_root / "pathfinder"
 
     if not graphml_path.exists():
         raise FileNotFoundError(
@@ -70,14 +68,5 @@ def run_route_pipeline(route_key: str, algorithm: str) -> tuple[Any, dict[int, d
     edges = convert_edges(graph, osm_to_compact)
     write_graph_input(graph_input_path, node_lookup, edges, start_compact, end_compact)
 
-    if not executable_path.exists():
-        raise FileNotFoundError(f"Missing pathfinder executable: {executable_path}")
-
-    subprocess.run(
-        [str(executable_path), str(graph_input_path), str(output_json_path), algorithm],
-        check=True,
-        cwd=repo_root,
-    )
-
-    result = json.loads(output_json_path.read_text(encoding="utf-8"))
+    result = run_cpp_pathfinder(graph_input_path, output_json_path, algorithm)
     return graph, node_lookup, result
