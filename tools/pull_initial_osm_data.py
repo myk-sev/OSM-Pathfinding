@@ -11,6 +11,8 @@ import argparse
 import sys
 from pathlib import Path
 
+import osmnx as ox
+
 REPO_ROOT = Path(__file__).resolve().parents[1]
 if str(REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(REPO_ROOT))
@@ -79,9 +81,6 @@ def parse_args() -> argparse.Namespace:
 
 if __name__ == "__main__":
     args = parse_args()
-    north, south, east, west = _compute_bounds(buffer_deg=args.buffer_deg)
-    print(f"Using bbox (west, south, east, north): {(west, south, east, north)}")
-
     out = pull_initial_graph(
         output_path=args.output,
         network_type=args.network_type,
