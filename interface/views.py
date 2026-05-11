@@ -22,7 +22,7 @@ def _coords_from_compact_path(
         node = node_lookup.get(node_id)
         if node is None:
             continue
-        coords.append((node["y"], node["x"]))
+        coords.append((node["lat"], node["lon"]))
     return coords
 
 
