@@ -40,10 +40,7 @@ def pull_initial_graph(output_path: Path, network_type: str, buffer_deg: float) 
     """Download and save graph data required by the route pipeline."""
     north, south, east, west = _compute_bounds(buffer_deg=buffer_deg)
 
-    # OSMnx expects bbox ordering as (left, bottom, right, top) => (west, south, east, north).
-    # Passing (north, south, east, west) can trigger massive query areas.
-    bbox = (west, south, east, north)
-    graph = ox.graph_from_bbox(bbox=bbox, network_type=network_type, simplify=True)
+    graph = ox.graph_from_bbox((north, south, east, west), network_type=network_type, simplify=True)
 
     output_path.parent.mkdir(parents=True, exist_ok=True)
     ox.save_graphml(graph, output_path)
@@ -75,9 +72,6 @@ def parse_args() -> argparse.Namespace:
 
 if __name__ == "__main__":
     args = parse_args()
-    north, south, east, west = _compute_bounds(buffer_deg=args.buffer_deg)
-    print(f"Using bbox (west, south, east, north): {(west, south, east, north)}")
-
     out = pull_initial_graph(
         output_path=args.output,
         network_type=args.network_type,
