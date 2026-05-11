@@ -7,7 +7,7 @@ from typing import Any
 import folium
 from django.shortcuts import render
 
-from route_pipeline_service import run_route_pipeline
+from services.route_pipeline_service import run_route_pipeline
 
 from .forms import ALGORITHM_CHOICES, PathfindingForm
 
