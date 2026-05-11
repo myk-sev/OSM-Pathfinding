@@ -1,4 +1,3 @@
-"""Folium helpers for visualizing pathfinding traversal progress."""
 """Folium helpers for visualizing pathfinding output."""
 
 from __future__ import annotations

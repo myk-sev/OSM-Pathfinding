@@ -2,7 +2,7 @@
 
 from django import forms
 
-from route_choices import DJANGO_ROUTE_CHOICES, ROUTE_BY_KEY
+from services.route_choices import DJANGO_ROUTE_CHOICES, ROUTE_BY_KEY
 
 ALGORITHM_CHOICES = [
     ("dijkstra", "Dijkstra"),
