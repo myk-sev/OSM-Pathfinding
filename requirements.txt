@@ -1,0 +1,10 @@
+Django>=5.0
+folium>=0.16.0
+osmnx>=1.9.0
+networkx>=3.2
+geopy>=2.4.0
+gunicorn>=21.2.0
+whitenoise>=6.6.0
+python-dotenv>=1.0.0
+pytest>=8.0.0
+pytest-django>=4.8.0
