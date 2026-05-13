@@ -6,8 +6,6 @@ approved routes instead of submitting arbitrary coordinates.
 
 from dataclasses import dataclass
 
-from services.temp_folium_fixture import TEMP_FOLIUM_ROUTE_KEY
-
 
 @dataclass(frozen=True)
 class RouteChoice:
@@ -45,14 +43,6 @@ ROUTE_CHOICES = [
         start_lng=-87.4737,
         end_lat=41.4170,
         end_lng=-87.3653,
-    ),
-    RouteChoice(
-        key=TEMP_FOLIUM_ROUTE_KEY,
-        display_name="[Temporary] Folium capacity fixture",
-        start_lat=41.5859,
-        start_lng=-87.4737,
-        end_lat=41.5890,
-        end_lng=-87.4678,
     ),
 ]
 

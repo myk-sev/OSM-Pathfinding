@@ -10,7 +10,6 @@ import osmnx as ox
 from services.export_osmnx_graph import build_node_mappings, convert_edges, write_graph_input
 from services.graph_pathfinder import run_graph_pathfinder
 from services.route_choices import ROUTE_BY_KEY
-from services.temp_folium_fixture import TEMP_FOLIUM_ROUTE_KEY, load_temp_folium_fixture
 
 _GRAPH_CACHE: dict[str, Any] = {}
 
@@ -43,11 +42,6 @@ def run_route_pipeline(route_key: str, algorithm: str) -> tuple[Any, dict[int, d
     route = ROUTE_BY_KEY.get(route_key)
     if route is None:
         raise ValueError(f"Unknown route_key: {route_key}")
-
-    if route_key == TEMP_FOLIUM_ROUTE_KEY:
-        graph_edges, node_lookup, result = load_temp_folium_fixture()
-        result["algorithm"] = f"{algorithm} (temporary Folium fixture)"
-        return graph_edges, node_lookup, result
 
     repo_root = Path(__file__).resolve().parent
     graphml_path = repo_root / "ivy_tech_lake_county.graphml"

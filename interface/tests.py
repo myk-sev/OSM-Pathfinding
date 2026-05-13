@@ -3,8 +3,7 @@ from django.test import SimpleTestCase
 from interface.forms import ALGORITHM_CHOICES
 from interface.views import _coords_from_path_result
 from services.graph_pathfinder import run_graph_pathfinder
-from services.temp_folium_fixture import TEMP_FOLIUM_ROUTE_KEY, load_temp_folium_fixture
-from visualization.folium_map_builder import build_result_map
+from services.route_choices import DJANGO_ROUTE_CHOICES
 
 
 class PathCoordinateTests(SimpleTestCase):
@@ -32,36 +31,12 @@ class PathCoordinateTests(SimpleTestCase):
         )
 
 
-class TemporaryFoliumFixtureTests(SimpleTestCase):
-    def test_fixture_renders_full_folium_capacity_map(self) -> None:
-        graph_edges, node_lookup, result = load_temp_folium_fixture()
-
-        map_html = build_result_map(graph_edges, node_lookup, result)
-
-        self.assertIn("Base Road Network", map_html)
-        self.assertIn("Visited Traversal", map_html)
-        self.assertIn("Final Path", map_html)
-        self.assertIn("Route Metrics", map_html)
-        self.assertIn("antPath", map_html)
-        self.assertIn("Start node: 1", map_html)
-        self.assertIn("End node: 5", map_html)
-
-    def test_temporary_route_posts_through_django_view(self) -> None:
-        response = self.client.post(
-            "/",
-            {"route": TEMP_FOLIUM_ROUTE_KEY, "algorithm": "dijkstra"},
-        )
-
-        self.assertEqual(response.status_code, 200)
-        content = response.content.decode()
-        self.assertIn("Pathfinding Results", content)
-        self.assertIn("dijkstra (temporary Folium fixture)", content)
-        self.assertIn("Base Road Network", content)
-        self.assertIn("Visited Traversal", content)
-        self.assertIn("Final Path", content)
-
-
 class GraphPathfinderTests(SimpleTestCase):
+    def test_route_choices_do_not_include_temporary_folium_fixture(self) -> None:
+        route_keys = [key for key, _ in DJANGO_ROUTE_CHOICES]
+
+        self.assertNotIn("temp_folium_capacity", route_keys)
+
     def test_form_offers_dijkstra_depth_first_and_breadth_first(self) -> None:
         self.assertEqual(
             ALGORITHM_CHOICES,
