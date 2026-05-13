@@ -5,38 +5,207 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>OSM Pathfinding</title>
   <style>
-    body { font-family: Arial, sans-serif; margin: 2rem; }
-    form { max-width: 700px; display: grid; gap: 0.75rem; }
-    label { font-weight: 600; }
-    select, button { padding: 0.6rem; font-size: 1rem; }
-    .error { color: #b00020; }
+    :root {
+      color-scheme: light;
+      --panel-bg: rgba(255, 255, 255, 0.94);
+      --panel-border: rgba(15, 23, 42, 0.14);
+      --text: #111827;
+      --muted: #5b6472;
+      --accent: #2563eb;
+      --accent-dark: #1d4ed8;
+      --danger: #b42318;
+      --shadow: 0 24px 70px rgba(15, 23, 42, 0.22);
+    }
+
+    * { box-sizing: border-box; }
+
+    html,
+    body {
+      height: 100%;
+      margin: 0;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      color: var(--text);
+      background: #e5e7eb;
+    }
+
+    .map-layout {
+      position: relative;
+      min-height: 100vh;
+      overflow: hidden;
+    }
+
+    .map-canvas,
+    .map-canvas iframe {
+      position: absolute;
+      inset: 0;
+      width: 100% !important;
+      height: 100% !important;
+      border: 0;
+    }
+
+    .sidebar {
+      position: relative;
+      z-index: 10;
+      width: min(390px, calc(100vw - 32px));
+      min-height: calc(100vh - 32px);
+      margin: 16px;
+      padding: 22px;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      border: 1px solid var(--panel-border);
+      border-radius: 8px;
+      background: var(--panel-bg);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(16px);
+    }
+
+    .sidebar h1 {
+      margin: 0;
+      font-size: 1.8rem;
+      line-height: 1.1;
+      letter-spacing: 0;
+    }
+
+    .sidebar p {
+      margin: 0;
+      color: var(--muted);
+      line-height: 1.5;
+    }
+
+    form {
+      display: grid;
+      gap: 16px;
+    }
+
+    .field {
+      display: grid;
+      gap: 8px;
+    }
+
+    label {
+      font-size: 0.82rem;
+      font-weight: 700;
+      color: #374151;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    select,
+    button {
+      width: 100%;
+      border-radius: 8px;
+      font: inherit;
+    }
+
+    select {
+      min-height: 46px;
+      padding: 0.65rem 0.75rem;
+      border: 1px solid #cbd5e1;
+      background: #fff;
+      color: var(--text);
+    }
+
+    select:focus,
+    button:focus-visible {
+      outline: 3px solid rgba(37, 99, 235, 0.22);
+      outline-offset: 2px;
+      border-color: var(--accent);
+    }
+
+    button {
+      min-height: 48px;
+      border: 0;
+      background: var(--accent);
+      color: #fff;
+      font-weight: 800;
+      cursor: pointer;
+      transition: background-color 160ms ease, transform 160ms ease;
+    }
+
+    button:hover {
+      background: var(--accent-dark);
+      transform: translateY(-1px);
+    }
+
+    .error,
+    .errorlist {
+      margin: 0;
+      padding: 10px 12px;
+      border-radius: 8px;
+      background: #fef3f2;
+      color: var(--danger);
+      font-size: 0.9rem;
+      list-style: none;
+    }
+
+    .route-note {
+      margin-top: auto;
+      padding-top: 18px;
+      border-top: 1px solid rgba(15, 23, 42, 0.1);
+      font-size: 0.92rem;
+    }
+
+    @media (max-width: 720px) {
+      .map-layout {
+        min-height: 100svh;
+        display: flex;
+        align-items: flex-end;
+      }
+
+      .sidebar {
+        width: calc(100vw - 20px);
+        min-height: auto;
+        max-height: calc(100svh - 20px);
+        margin: 10px;
+        padding: 18px;
+        overflow-y: auto;
+      }
+
+      .sidebar h1 {
+        font-size: 1.45rem;
+      }
+    }
   </style>
 </head>
 <body>
-  <h1>Find a Route</h1>
-
-  {% if error %}
-    <p class="error">{{ error }}</p>
-  {% endif %}
-
-  <form method="post">
-    {% csrf_token %}
-
-    {{ form.non_field_errors }}
-
-    <div>
-      <label for="{{ form.route.id_for_label }}">Route</label>
-      {{ form.route }}
-      {{ form.route.errors }}
+  <main class="map-layout">
+    <div class="map-canvas" aria-hidden="true">
+      {{ map_html|safe }}
     </div>
 
-    <div>
-      <label for="{{ form.algorithm.id_for_label }}">Algorithm</label>
-      {{ form.algorithm }}
-      {{ form.algorithm.errors }}
-    </div>
+    <aside class="sidebar" aria-label="Pathfinding controls">
+      <div>
+        <h1>Find a Route</h1>
+        <p>Select a predefined trip and algorithm, then run the pathfinder over the map network.</p>
+      </div>
 
-    <button type="submit">Run Pathfinding</button>
-  </form>
+      {% if error %}
+        <p class="error">{{ error }}</p>
+      {% endif %}
+
+      <form method="post">
+        {% csrf_token %}
+
+        {{ form.non_field_errors }}
+
+        <div class="field">
+          <label for="{{ form.route.id_for_label }}">Route</label>
+          {{ form.route }}
+          {{ form.route.errors }}
+        </div>
+
+        <div class="field">
+          <label for="{{ form.algorithm.id_for_label }}">Algorithm</label>
+          {{ form.algorithm }}
+          {{ form.algorithm.errors }}
+        </div>
+
+        <button type="submit">Run Pathfinding</button>
+      </form>
+
+      <p class="route-note">The route preview shows available destinations from the Ivy Tech Lake County starting point.</p>
+    </aside>
+  </main>
 </body>
 </html>

@@ -24,7 +24,13 @@ def _resolve_executable() -> str:
     if sys.platform.startswith("win"):
         candidates = [f"{name}.exe" for name in candidates] + candidates
 
-    search_roots = [Path.cwd(), Path(__file__).resolve().parent.parent]
+    search_roots = [
+        Path.cwd(),
+        Path.cwd() / "services",
+        Path(__file__).resolve().parent,
+        Path(__file__).resolve().parent.parent,
+    ]
+
     for root in search_roots:
         for candidate in candidates:
             resolved = root / candidate

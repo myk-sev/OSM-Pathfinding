@@ -7,6 +7,8 @@ from typing import Any
 import folium
 from folium.plugins import AntPath
 
+DEFAULT_TILES = "CartoDB positron"
+
 
 def _node_latlon(node_lookup: dict[int, dict[str, float]], node_id: int) -> tuple[float, float]:
     node = node_lookup[int(node_id)]
@@ -41,7 +43,7 @@ def build_result_map(
     final_path = [int(n) for n in result.get("final_path", [])]
 
     center = _node_latlon(lookup, start_id)
-    fmap = folium.Map(location=center, zoom_start=15, control_scale=True, tiles="CartoDB positron")
+    fmap = folium.Map(location=center, zoom_start=15, control_scale=True, tiles=DEFAULT_TILES)
 
     # 1) Base road network
     base_layer = folium.FeatureGroup(name="Base Road Network", show=True)
@@ -108,7 +110,7 @@ def build_result_map(
     total_distance = result.get("total_distance", "n/a")
     nodes_visited = result.get("nodes_visited", len(visited_order))
     metrics_html = f"""
-    <div style=\"position: fixed; bottom: 20px; left: 20px; z-index: 9999;
+    <div style=\"position: fixed; bottom: 20px; right: 20px; z-index: 9999;
                 background: white; border: 1px solid #bbb; border-radius: 8px;
                 padding: 10px 12px; font-size: 13px; min-width: 200px;\">
       <div style=\"font-weight: 700; margin-bottom: 6px;\">Route Metrics</div>
@@ -121,4 +123,4 @@ def build_result_map(
     fmap.get_root().html.add_child(folium.Element(metrics_html))
 
     folium.LayerControl(collapsed=False).add_to(fmap)
-    return fmap.get_root().render()
+    return fmap._repr_html_()

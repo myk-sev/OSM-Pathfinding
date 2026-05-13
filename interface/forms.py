@@ -6,8 +6,8 @@ from services.route_choices import DJANGO_ROUTE_CHOICES, ROUTE_BY_KEY
 
 ALGORITHM_CHOICES = [
     ("dijkstra", "Dijkstra"),
-    ("astar", "A*"),
-    ("bellman_ford", "Bellman-Ford"),
+    ("dfs", "Depth First"),
+    ("bfs", "Breadth-First"),
 ]
 
 

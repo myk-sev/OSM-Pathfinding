@@ -7,9 +7,10 @@ from typing import Any
 
 import osmnx as ox
 
-from services.cpp_pathfinder_runner import run_cpp_pathfinder
 from services.export_osmnx_graph import build_node_mappings, convert_edges, write_graph_input
+from services.graph_pathfinder import run_graph_pathfinder
 from services.route_choices import ROUTE_BY_KEY
+from services.temp_folium_fixture import TEMP_FOLIUM_ROUTE_KEY, load_temp_folium_fixture
 
 _GRAPH_CACHE: dict[str, Any] = {}
 
@@ -35,13 +36,18 @@ def run_route_pipeline(route_key: str, algorithm: str) -> tuple[Any, dict[int, d
     1) load/cached OSM graph,
     2) resolve nearest start/end OSM nodes from route coordinates,
     3) export graph_input.txt,
-    4) call C++ pathfinder executable,
+    4) run the route-specific pathfinder,
     5) parse JSON output,
     6) return (graph, node_lookup, result).
     """
     route = ROUTE_BY_KEY.get(route_key)
     if route is None:
         raise ValueError(f"Unknown route_key: {route_key}")
+
+    if route_key == TEMP_FOLIUM_ROUTE_KEY:
+        graph_edges, node_lookup, result = load_temp_folium_fixture()
+        result["algorithm"] = f"{algorithm} (temporary Folium fixture)"
+        return graph_edges, node_lookup, result
 
     repo_root = Path(__file__).resolve().parent
     graphml_path = repo_root / "ivy_tech_lake_county.graphml"
@@ -68,5 +74,12 @@ def run_route_pipeline(route_key: str, algorithm: str) -> tuple[Any, dict[int, d
     edges = convert_edges(graph, osm_to_compact)
     write_graph_input(graph_input_path, node_lookup, edges, start_compact, end_compact)
 
-    result = run_cpp_pathfinder(graph_input_path, output_json_path, algorithm)
+    result = run_graph_pathfinder(
+        node_lookup,
+        edges,
+        start_compact,
+        end_compact,
+        algorithm,
+        output_json_path,
+    )
     return graph, node_lookup, result

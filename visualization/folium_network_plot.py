@@ -6,6 +6,8 @@ from typing import Mapping, Sequence
 
 import folium
 
+from visualization.folium_map_builder import DEFAULT_TILES
+
 
 def draw_road_network(
     road_graph: Mapping[int, Sequence[int]],
@@ -43,7 +45,7 @@ def draw_road_network(
 
     first_node_id = next(iter(node_lookup))
     center_lat, center_lon = coords_for(first_node_id)
-    fmap = folium.Map(location=[center_lat, center_lon], zoom_start=zoom_start)
+    fmap = folium.Map(location=[center_lat, center_lon], zoom_start=zoom_start, tiles=DEFAULT_TILES)
 
     drawn_segments: set[tuple[int, int]] = set()
     for source, neighbors in road_graph.items():

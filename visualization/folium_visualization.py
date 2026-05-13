@@ -6,6 +6,8 @@ from typing import Mapping, Sequence
 
 import folium
 
+from visualization.folium_map_builder import DEFAULT_TILES
+
 
 def render_visited_order_map(
     visited_order: Sequence[int],
@@ -37,7 +39,11 @@ def render_visited_order_map(
         raise KeyError(f"Node id {first_id} from visited_order is missing in node_lookup")
 
     start_meta = node_lookup[first_id]
-    fmap = folium.Map(location=[start_meta["lat"], start_meta["lon"]], zoom_start=zoom_start)
+    fmap = folium.Map(
+        location=[start_meta["lat"], start_meta["lon"]],
+        zoom_start=zoom_start,
+        tiles=DEFAULT_TILES,
+    )
 
     total = len(visited_order)
     for idx, node_id in enumerate(visited_order):
@@ -99,7 +105,7 @@ def draw_final_path(
         coordinates.append((lat, lng))
 
     if map_obj is None:
-        map_obj = folium.Map(location=coordinates[0], zoom_start=15, control_scale=True)
+        map_obj = folium.Map(location=coordinates[0], zoom_start=15, control_scale=True, tiles=DEFAULT_TILES)
 
     folium.PolyLine(
         locations=coordinates,
